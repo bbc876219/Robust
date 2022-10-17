@@ -1,0 +1,256 @@
+import java.util.regex.Pattern
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+def class BbcMavenHelper {
+    private static final String RELEASE_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework_release/";
+    private static final String SNAPSHOT_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework/";
+    private static final String GRAY_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework_gray/";
+
+    private static final String[] VALID_STABLE_VERSION_PATTERNS = [
+            '^\\d+\\.\\d+\\.\\d+$', // 1.20.1
+    ];
+
+    private static final String[] VALID_SNAPSHOT_VERSION_PATTERNS = [
+            '^\\d+\\.\\d+\\.\\d+-SNAPSHOT$', // 1.20.1-SNAPSHOT
+    ];
+
+    private static final String[] VALID_GRAY_VERSION_PATTERNS = [
+            '^\\d+\\.\\d+\\.\\d+-alpha\\d+$',// 1.20.1-ALPHA1
+            '^\\d+\\.\\d+\\.\\d+-beta\\d+$',// 1.20.1-BETA1
+            '^\\d+\\.\\d+\\.\\d+-rc\\d+$',// 1.20.1-RC1
+//            '^\\d+\\.\\d+\\.\\d+-gray\\d+$',// 1.20.1-RC1
+    ];
+
+    static final String VERSION_HELP_HINT = "Valid version pattern: 0.10.1, 11.0.1-SNAPSHOT, 0.0.1-alpha1, 0.0.1-beta12, 0.0.1-rc123";
+
+    static final int VERSION_TYPE_UNKNOWN = 0;
+    static final int VERSION_TYPE_STABLE = 1;
+    static final int VERSION_TYPE_GRAY = 2;
+    static final int VERSION_TYPE_SNAPSHOT = 3;
+
+    private static boolean isValidVersion(String version, String[] patternArray) {
+        for (String pattern : patternArray) {
+            if (Pattern.matches(pattern, version)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean isValidStableVersion(String version) {
+        return isValidVersion(version, VALID_STABLE_VERSION_PATTERNS);
+    }
+
+    static boolean isValidGrayVersion(String version) {
+        return isValidVersion(version, VALID_GRAY_VERSION_PATTERNS);
+    }
+
+    static boolean isValidSnapshotVersion(String version) {
+        return isValidVersion(version, VALID_SNAPSHOT_VERSION_PATTERNS);
+    }
+
+    static int getVersionType(String version) {
+        if (isValidStableVersion(version)) {
+            return VERSION_TYPE_STABLE;
+        }
+        if (isValidGrayVersion(version)) {
+            return VERSION_TYPE_GRAY;
+        }
+        if (isValidSnapshotVersion(version)) {
+            return VERSION_TYPE_SNAPSHOT;
+        }
+        return VERSION_TYPE_UNKNOWN
+    }
+
+    static void checkValidVersion(String version) {
+        if (getVersionType(version) == BbcMavenHelper.VERSION_TYPE_UNKNOWN) {
+            throw new IllegalArgumentException(String.format("%s not valid. %s", version, BbcMavenHelper.VERSION_HELP_HINT))
+        }
+    }
+
+    private def static getProp(Project currentProject, String propName) {
+        if (currentProject.hasProperty(propName)) {
+            return currentProject.getProperties().get(propName);
+        }
+        return null
+    }
+
+    private def static getUrlByType(Project currentProject, String type, String defUrl) {
+        String grayUrl = getProp(currentProject, type);
+        if (grayUrl == null) {
+            grayUrl = defUrl;
+        }
+        return grayUrl;
+    }
+
+    def static getGrayUrl(Project project) {
+        return getUrlByType(project, "GRAY_URL", GRAY_URL_DEFAULT);
+    }
+
+    def static getSnapshotUrl(Project project) {
+        return getUrlByType(project, "SNAPSHOT_URL", SNAPSHOT_URL_DEFAULT);
+    }
+
+    def static getReleaseUrl(Project project) {
+        return getUrlByType(project, "RELEASE_URL", RELEASE_URL_DEFAULT);
+    }
+}
+
+configurations {
+    deployerJars
+}
+
+BbcMavenHelper.checkValidVersion(VERSION)
+
+// 判断版本是Release or Snapshots
+def isRelease() {
+    return BbcMavenHelper.isValidStableVersion(VERSION);
+}
+
+//true:包含灰度,为灰度版本
+//false:不是灰度版本
+def isGray() {
+    return BbcMavenHelper.isValidGrayVersion(VERSION);
+}
+
+def isSnapshot() {
+    return BbcMavenHelper.isValidSnapshotVersion(VERSION);
+}
+
+// 获取仓库url
+def getRepositoryUrl() {
+    if (isGray()) {
+        return BbcMavenHelper.getGrayUrl(project)
+    }
+    if (isRelease()) {
+        return BbcMavenHelper.getReleaseUrl(project);
+    }
+    if (isSnapshot()) {
+        return BbcMavenHelper.getSnapshotUrl(project)
+    }
+
+    throw new RuntimeException("Version not valid. ${BbcMavenHelper.VERSION_HELP_HINT}")
+}
+
+def shouldUploadSource() {
+    String key = "UPLOAD_SRC";
+    return project.hasProperty(key) && project.getProperties().get(key) == "1"
+}
+
+def shouldUploadJavaDoc() {
+    String key = "UPLOAD_JAVADOC";
+    return project.hasProperty(key) && project.getProperties().get(key) == "1"
+}
+
+def isAndroidJar() {
+    //Extension with name 'android' does not exist. Currently registered extension names: [ext, defaultArtifacts, reporting, sourceSets, java, signing]
+    return project.getExtensions().findByName("android") != null
+}
+
+def isJavaJar() {
+    return project.getExtensions().findByName("java") != null
+}
+
+
+def changeLogMd = project.file('changelog1.md')
+def changeLogHtml = new File(project.buildDir, 'changelog1.html')
+
+task convertChangeMd(type: Exec) {
+//    changeLogHtml.delete()
+//    def scriptFile = new File(project.projectDir.parentFile, "config/tools/Python-Markdown/convert.py")
+//    if (changeLogMd.exists()) {
+//        commandLine 'python', scriptFile, changeLogMd, changeLogHtml.absolutePath
+//    } else {
+        commandLine 'echo', 'changelog not exist.'
+//    }
+//    outputs.file(changeLogHtml.absolutePath)
+}
+
+project.afterEvaluate {
+    task sourceJar(type: Jar) {
+        description = 'Build a source jar artifact suitable for maven deployment.'
+        archiveClassifier.set('sources')
+        if (isAndroidJar()) {
+            from android.sourceSets.main.java.srcDirs
+        } else if (isJavaJar()) {
+            from sourceSets.main.allJava
+        }
+    }
+
+    task javadocGen(type: Javadoc) {
+        if (isAndroidJar()) {
+            source = android.sourceSets.main.java.srcDirs
+            classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+            exclude '**/R.html', '**/R.*.html'
+        } else if (isJavaJar()) {
+            source = sourceSets.main.allJava
+            exclude '**/R.html', '**/R.*.html'
+        }
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadocGen) {
+        description = 'Build a javadoc jar artifact suitable for maven deployment.'
+        archiveClassifier.set('javadoc')
+        from javadocGen.destinationDir
+    }
+
+    artifacts {
+        if (shouldUploadSource()) {
+            archives sourceJar
+        }
+
+        if (shouldUploadJavaDoc()) {
+            archives javadocJar
+        }
+
+        if (changeLogMd.exists()) {
+            archives(changeLogHtml) {
+                classifier('changelog')
+            }
+        }
+    }
+}
+
+uploadArchives {
+    println("isLocalRepository="+isLocalRepository)
+    println("getRepositoryUrl()="+getRepositoryUrl())
+    println("NAME()="+NAME)
+    println("PASSWORD()="+PASSWORD)
+    repositories {
+        mavenDeployer {
+            if (isLocalRepository == "1") {
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+                pom.version = VERSION
+                pom.artifactId = ARTIFACT_ID
+                pom.groupId = GROUP_ID
+                repository(url: uri("${System.env.HOME}/.m2/repository"))
+                //repository(url: uri("${rootProject.buildFile.parentFile.absolutePath}/repos"))
+            } else {
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+                pom.version = VERSION
+                pom.artifactId = ARTIFACT_ID
+                pom.groupId = GROUP_ID
+                repository(url: getRepositoryUrl()) {
+                    authentication(userName: NAME, password: PASSWORD) // maven授权信息
+                }
+            }
+        }
+    }
+}
+
+uploadArchives.dependsOn convertChangeMd
+
+// 进行数字签名
+signing {
+    // 当 发布版本 & 存在"uploadArchives"任务时，才执行
+    required { isRelease() && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+
