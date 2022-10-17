@@ -1,0 +1,656 @@
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle b/build.gradle
+--- a/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/build.gradle	(date 1665997238709)
+@@ -4,15 +4,16 @@
+     repositories {
+         mavenLocal()
+         jcenter()
++        google()
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:2.1.0'
++        classpath 'com.android.tools.build:gradle:4.2.1'
+         // NOTE: Do not place your application dependencies here; they belong
+         // in the individual module build.gradle files
+-        classpath 'com.meituan.robust:gradle-plugin:0.4.96'
+-        classpath 'com.meituan.robust:auto-patch-plugin:0.4.96'
++        classpath "com.meituan.robust:gradle-plugin:$GRADLE_PLUGIN_VERSION"
++        classpath "com.meituan.robust:auto-patch-plugin:$AUTO_PATCH_PLUGIN_VERSION"
+         classpath 'me.tatarka:gradle-retrolambda:3.2.0'
+-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
++//        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+     }
+@@ -24,10 +25,12 @@
+ allprojects {
+     repositories {
+         mavenLocal()
+-        maven {
+-            url "http://depot.sankuai.com/nexus/content/groups/public/"
+-        }
++//        maven {
++//            url "http://depot.sankuai.com/nexus/content/groups/public/"
++//        }
++        google()
+         jcenter()
++
+     }
+     tasks.withType(JavaCompile) { options.encoding = "UTF-8" }
+ }
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle b/app/build.gradle
+--- a/app/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/app/build.gradle	(date 1665997590390)
+@@ -4,12 +4,12 @@
+ apply plugin: 'robust'
+ 
+ android {
+-    compileSdkVersion 25
+-    buildToolsVersion '25.0.2'
++    compileSdkVersion 30
++    buildToolsVersion '30.0.3'
+     defaultConfig {
+         applicationId "com.meituan.robust.sample"
+-        minSdkVersion 9
+-        targetSdkVersion 25
++        minSdkVersion 21
++        targetSdkVersion 30
+         versionCode 1
+         versionName "1.0"
+     }
+@@ -62,14 +62,14 @@
+     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+ }
+ dependencies {
+-    compile 'com.google.code.gson:gson:2.7'
+-    compile 'com.squareup.picasso:picasso:2.5.2'
+-    compile fileTree(dir: 'libs', include: ['*.jar'])
++    implementation 'com.google.code.gson:gson:2.7'
++    implementation 'com.squareup.picasso:picasso:2.5.2'
++    implementation fileTree(dir: 'libs', include: ['*.jar'])
+     testCompile 'junit:junit:4.12'
+-    compile 'com.android.support:appcompat-v7:25.3.1'
+-    compile 'com.squareup.okhttp:okhttp:2.5.0'
+-    compile 'com.google.code.gson:gson:2.3.1'
+-    compile 'com.android.support:design:25.4.0'
+-    compile 'org.javassist:javassist:3.20.0-GA'
++    implementation 'com.android.support:appcompat-v7:25.3.1'
++    implementation 'com.squareup.okhttp:okhttp:2.5.0'
++    implementation 'com.google.code.gson:gson:2.3.1'
++    implementation 'com.android.support:design:25.4.0'
++    implementation 'org.javassist:javassist:3.20.0-GA'
+     compile project(path: ':patch')
+ }
+\ No newline at end of file
+Index: autopatchbase/gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/autopatchbase/gradle.properties b/autopatchbase/gradle.properties
+new file mode 100644
+--- /dev/null	(date 1665991576790)
++++ b/autopatchbase/gradle.properties	(date 1665991576790)
+@@ -0,0 +1,9 @@
++VERSION=1.5.0
++VERSION_CODE=150
++GROUP_ID=com.meituan.robust
++ARTIFACT_ID=autopatchbase
++#RELEASE_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#SNAPSHOT_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#GRAY_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#NAME=huobi-framework-android
++#PASSWORD=huobiframe123
+Index: gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle.properties b/gradle.properties
+--- a/gradle.properties	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/gradle.properties	(date 1665996536240)
+@@ -16,6 +16,16 @@
+ # This option should only be used with decoupled projects. More details, visit
+ # http://www.gradle.org/docs/current/userguide/multi_project_builds.html#sec:decoupled_projects
+ # org.gradle.parallel=true
+-VERSION_NAME=0.4.99
++AUTO_PATCH_VERSION=1.5.0
++AUTO_PATCH_PLUGIN_VERSION=1.5.0
++GRADLE_PLUGIN_VERSION=1.5.0
+ GROUP=com.meituan.robust
++VERSION=1.5.0
++NAME=huobi-framework-android
++PASSWORD=huobiframe123
++RELEASE_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++SNAPSHOT_URL=http://nexus.huobidev.com:8081/repository/maven-huobi-android-framwork/
++GRAY_URL=http://nexus.huobidev.com:8081/repository/maven-huobi-android-framwork/
++isLocalRepository=1
++UPLOAD_SRC=1
+ 
+Index: auto-patch-plugin/gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/auto-patch-plugin/gradle.properties b/auto-patch-plugin/gradle.properties
+new file mode 100644
+--- /dev/null	(date 1665991484219)
++++ b/auto-patch-plugin/gradle.properties	(date 1665991484219)
+@@ -0,0 +1,9 @@
++VERSION=1.5.0
++VERSION_CODE=150
++GROUP_ID=com.meituan.robust
++ARTIFACT_ID=auto-patch-plugin
++#RELEASE_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#SNAPSHOT_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#GRAY_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#NAME=huobi-framework-android
++#PASSWORD=huobiframe123
+Index: patch/gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/patch/gradle.properties b/patch/gradle.properties
+new file mode 100644
+--- /dev/null	(date 1665991665219)
++++ b/patch/gradle.properties	(date 1665991665219)
+@@ -0,0 +1,9 @@
++VERSION=1.5.0
++VERSION_CODE=150
++GROUP_ID=com.meituan.robust
++ARTIFACT_ID=patch
++#RELEASE_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#SNAPSHOT_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#GRAY_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#NAME=huobi-framework-android
++#PASSWORD=huobiframe123
+Index: gradle-plugin/gradle.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle-plugin/gradle.properties b/gradle-plugin/gradle.properties
+new file mode 100644
+--- /dev/null	(date 1665991654272)
++++ b/gradle-plugin/gradle.properties	(date 1665991654272)
+@@ -0,0 +1,9 @@
++VERSION=1.5.0
++VERSION_CODE=150
++GROUP_ID=com.meituan.robust
++ARTIFACT_ID=gradle-plugin
++#RELEASE_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#SNAPSHOT_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#GRAY_URL=http://nexus.huobidev.com:8081/repository/huobi-android-framework-release/
++#NAME=huobi-framework-android
++#PASSWORD=huobiframe123
+Index: maven-push.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/maven-push.gradle b/maven-push.gradle
+new file mode 100644
+--- /dev/null	(date 1660795114436)
++++ b/maven-push.gradle	(date 1660795114436)
+@@ -0,0 +1,256 @@
++import java.util.regex.Pattern
++
++apply plugin: 'maven'
++apply plugin: 'signing'
++
++def class BbcMavenHelper {
++    private static final String RELEASE_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework_release/";
++    private static final String SNAPSHOT_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework/";
++    private static final String GRAY_URL_DEFAULT = "http://nexus.zuoyebang.cc/nexus/content/repositories/homework_gray/";
++
++    private static final String[] VALID_STABLE_VERSION_PATTERNS = [
++            '^\\d+\\.\\d+\\.\\d+$', // 1.20.1
++    ];
++
++    private static final String[] VALID_SNAPSHOT_VERSION_PATTERNS = [
++            '^\\d+\\.\\d+\\.\\d+-SNAPSHOT$', // 1.20.1-SNAPSHOT
++    ];
++
++    private static final String[] VALID_GRAY_VERSION_PATTERNS = [
++            '^\\d+\\.\\d+\\.\\d+-alpha\\d+$',// 1.20.1-ALPHA1
++            '^\\d+\\.\\d+\\.\\d+-beta\\d+$',// 1.20.1-BETA1
++            '^\\d+\\.\\d+\\.\\d+-rc\\d+$',// 1.20.1-RC1
++//            '^\\d+\\.\\d+\\.\\d+-gray\\d+$',// 1.20.1-RC1
++    ];
++
++    static final String VERSION_HELP_HINT = "Valid version pattern: 0.10.1, 11.0.1-SNAPSHOT, 0.0.1-alpha1, 0.0.1-beta12, 0.0.1-rc123";
++
++    static final int VERSION_TYPE_UNKNOWN = 0;
++    static final int VERSION_TYPE_STABLE = 1;
++    static final int VERSION_TYPE_GRAY = 2;
++    static final int VERSION_TYPE_SNAPSHOT = 3;
++
++    private static boolean isValidVersion(String version, String[] patternArray) {
++        for (String pattern : patternArray) {
++            if (Pattern.matches(pattern, version)) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    static boolean isValidStableVersion(String version) {
++        return isValidVersion(version, VALID_STABLE_VERSION_PATTERNS);
++    }
++
++    static boolean isValidGrayVersion(String version) {
++        return isValidVersion(version, VALID_GRAY_VERSION_PATTERNS);
++    }
++
++    static boolean isValidSnapshotVersion(String version) {
++        return isValidVersion(version, VALID_SNAPSHOT_VERSION_PATTERNS);
++    }
++
++    static int getVersionType(String version) {
++        if (isValidStableVersion(version)) {
++            return VERSION_TYPE_STABLE;
++        }
++        if (isValidGrayVersion(version)) {
++            return VERSION_TYPE_GRAY;
++        }
++        if (isValidSnapshotVersion(version)) {
++            return VERSION_TYPE_SNAPSHOT;
++        }
++        return VERSION_TYPE_UNKNOWN
++    }
++
++    static void checkValidVersion(String version) {
++        if (getVersionType(version) == BbcMavenHelper.VERSION_TYPE_UNKNOWN) {
++            throw new IllegalArgumentException(String.format("%s not valid. %s", version, BbcMavenHelper.VERSION_HELP_HINT))
++        }
++    }
++
++    private def static getProp(Project currentProject, String propName) {
++        if (currentProject.hasProperty(propName)) {
++            return currentProject.getProperties().get(propName);
++        }
++        return null
++    }
++
++    private def static getUrlByType(Project currentProject, String type, String defUrl) {
++        String grayUrl = getProp(currentProject, type);
++        if (grayUrl == null) {
++            grayUrl = defUrl;
++        }
++        return grayUrl;
++    }
++
++    def static getGrayUrl(Project project) {
++        return getUrlByType(project, "GRAY_URL", GRAY_URL_DEFAULT);
++    }
++
++    def static getSnapshotUrl(Project project) {
++        return getUrlByType(project, "SNAPSHOT_URL", SNAPSHOT_URL_DEFAULT);
++    }
++
++    def static getReleaseUrl(Project project) {
++        return getUrlByType(project, "RELEASE_URL", RELEASE_URL_DEFAULT);
++    }
++}
++
++configurations {
++    deployerJars
++}
++
++BbcMavenHelper.checkValidVersion(VERSION)
++
++// 判断版本是Release or Snapshots
++def isRelease() {
++    return BbcMavenHelper.isValidStableVersion(VERSION);
++}
++
++//true:包含灰度,为灰度版本
++//false:不是灰度版本
++def isGray() {
++    return BbcMavenHelper.isValidGrayVersion(VERSION);
++}
++
++def isSnapshot() {
++    return BbcMavenHelper.isValidSnapshotVersion(VERSION);
++}
++
++// 获取仓库url
++def getRepositoryUrl() {
++    if (isGray()) {
++        return BbcMavenHelper.getGrayUrl(project)
++    }
++    if (isRelease()) {
++        return BbcMavenHelper.getReleaseUrl(project);
++    }
++    if (isSnapshot()) {
++        return BbcMavenHelper.getSnapshotUrl(project)
++    }
++
++    throw new RuntimeException("Version not valid. ${BbcMavenHelper.VERSION_HELP_HINT}")
++}
++
++def shouldUploadSource() {
++    String key = "UPLOAD_SRC";
++    return project.hasProperty(key) && project.getProperties().get(key) == "1"
++}
++
++def shouldUploadJavaDoc() {
++    String key = "UPLOAD_JAVADOC";
++    return project.hasProperty(key) && project.getProperties().get(key) == "1"
++}
++
++def isAndroidJar() {
++    //Extension with name 'android' does not exist. Currently registered extension names: [ext, defaultArtifacts, reporting, sourceSets, java, signing]
++    return project.getExtensions().findByName("android") != null
++}
++
++def isJavaJar() {
++    return project.getExtensions().findByName("java") != null
++}
++
++
++def changeLogMd = project.file('changelog1.md')
++def changeLogHtml = new File(project.buildDir, 'changelog1.html')
++
++task convertChangeMd(type: Exec) {
++//    changeLogHtml.delete()
++//    def scriptFile = new File(project.projectDir.parentFile, "config/tools/Python-Markdown/convert.py")
++//    if (changeLogMd.exists()) {
++//        commandLine 'python', scriptFile, changeLogMd, changeLogHtml.absolutePath
++//    } else {
++        commandLine 'echo', 'changelog not exist.'
++//    }
++//    outputs.file(changeLogHtml.absolutePath)
++}
++
++project.afterEvaluate {
++    task sourceJar(type: Jar) {
++        description = 'Build a source jar artifact suitable for maven deployment.'
++        archiveClassifier.set('sources')
++        if (isAndroidJar()) {
++            from android.sourceSets.main.java.srcDirs
++        } else if (isJavaJar()) {
++            from sourceSets.main.allJava
++        }
++    }
++
++    task javadocGen(type: Javadoc) {
++        if (isAndroidJar()) {
++            source = android.sourceSets.main.java.srcDirs
++            classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
++            exclude '**/R.html', '**/R.*.html'
++        } else if (isJavaJar()) {
++            source = sourceSets.main.allJava
++            exclude '**/R.html', '**/R.*.html'
++        }
++    }
++
++    task javadocJar(type: Jar, dependsOn: javadocGen) {
++        description = 'Build a javadoc jar artifact suitable for maven deployment.'
++        archiveClassifier.set('javadoc')
++        from javadocGen.destinationDir
++    }
++
++    artifacts {
++        if (shouldUploadSource()) {
++            archives sourceJar
++        }
++
++        if (shouldUploadJavaDoc()) {
++            archives javadocJar
++        }
++
++        if (changeLogMd.exists()) {
++            archives(changeLogHtml) {
++                classifier('changelog')
++            }
++        }
++    }
++}
++
++uploadArchives {
++    println("isLocalRepository="+isLocalRepository)
++    println("getRepositoryUrl()="+getRepositoryUrl())
++    println("NAME()="+NAME)
++    println("PASSWORD()="+PASSWORD)
++    repositories {
++        mavenDeployer {
++            if (isLocalRepository == "1") {
++                beforeDeployment {
++                    MavenDeployment deployment -> signing.signPom(deployment)
++                }
++                pom.version = VERSION
++                pom.artifactId = ARTIFACT_ID
++                pom.groupId = GROUP_ID
++                repository(url: uri("${System.env.HOME}/.m2/repository"))
++                //repository(url: uri("${rootProject.buildFile.parentFile.absolutePath}/repos"))
++            } else {
++                beforeDeployment {
++                    MavenDeployment deployment -> signing.signPom(deployment)
++                }
++                pom.version = VERSION
++                pom.artifactId = ARTIFACT_ID
++                pom.groupId = GROUP_ID
++                repository(url: getRepositoryUrl()) {
++                    authentication(userName: NAME, password: PASSWORD) // maven授权信息
++                }
++            }
++        }
++    }
++}
++
++uploadArchives.dependsOn convertChangeMd
++
++// 进行数字签名
++signing {
++    // 当 发布版本 & 存在"uploadArchives"任务时，才执行
++    required { isRelease() && gradle.taskGraph.hasTask("uploadArchives") }
++    sign configurations.archives
++}
++
++
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+--- a/gradle/wrapper/gradle-wrapper.properties	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/gradle/wrapper/gradle-wrapper.properties	(date 1665993473426)
+@@ -1,6 +1,6 @@
+-#Tue May 16 16:20:24 CST 2017
++#Mon Oct 17 15:57:53 CST 2022
+ distributionBase=GRADLE_USER_HOME
++distributionUrl=https\://services.gradle.org/distributions/gradle-6.7.1-bin.zip
+ distributionPath=wrapper/dists
+-zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-2.10-all.zip
++zipStoreBase=GRADLE_USER_HOME
+Index: auto-patch-plugin/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auto-patch-plugin/build.gradle b/auto-patch-plugin/build.gradle
+--- a/auto-patch-plugin/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/auto-patch-plugin/build.gradle	(date 1665996536230)
+@@ -1,15 +1,15 @@
+ apply plugin: 'groovy'
+ compileGroovy {
+-    sourceCompatibility = 1.7
+-    targetCompatibility = 1.7
++    sourceCompatibility = 1.8
++    targetCompatibility = 1.8
+ }
+ 
+ dependencies {
+-    compile gradleApi()
+-    compile localGroovy()
+-    compile 'com.android.tools.build:gradle:2.1.0'
+-    compile 'org.javassist:javassist:3.20.0-GA'
+-//    compile 'com.meituan.robust:autopatchbase:' + VERSION_NAME
+-    compile project(':autopatchbase')
++    implementation gradleApi()
++    implementation localGroovy()
++    implementation 'com.android.tools.build:gradle:4.2.1'
++    implementation 'org.javassist:javassist:3.20.0-GA'
++    implementation "com.meituan.robust:autopatchbase:$AUTO_PATCH_VERSION"
++//    implementation project(':autopatchbase')
+ }
+-apply from: '../gradle_mvn_push.gradle'
++apply from: '../maven-push.gradle'
+Index: gradle-plugin/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle-plugin/build.gradle b/gradle-plugin/build.gradle
+--- a/gradle-plugin/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/gradle-plugin/build.gradle	(date 1665997208087)
+@@ -1,17 +1,17 @@
+ apply plugin: 'groovy'
+ compileGroovy {
+-    sourceCompatibility = 1.7
+-    targetCompatibility = 1.7
++    sourceCompatibility = 1.8
++    targetCompatibility = 1.8
+ }
+ dependencies {
+-    compile gradleApi()
+-    compile localGroovy()
+-    compile 'com.android.tools.build:gradle:2.1.0'
+-    compile 'org.javassist:javassist:3.20.0-GA'
+-    compile fileTree(dir: "./src/main/libs", include: ['*.jar'])
+-    compile project(':autopatchbase')
+-//    compile 'com.meituan.robust:autopatchbase:0.4.93'
+-    compile 'org.ow2.asm:asm:5.0.1'
++    implementation gradleApi()
++    implementation localGroovy()
++    implementation 'com.android.tools.build:gradle:4.2.1'
++    implementation 'org.javassist:javassist:3.20.0-GA'
++    implementation fileTree(dir: "./src/main/libs", include: ['*.jar'])
++//    implementation project(':autopatchbase')
++    implementation "com.meituan.robust:autopatchbase:$AUTO_PATCH_VERSION"
++    implementation 'org.ow2.asm:asm:5.0.1'
+ }
+ 
+-apply from: '../gradle_mvn_push.gradle'
++apply from: '../maven-push.gradle'
+Index: gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmInsertImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmInsertImpl.java b/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmInsertImpl.java
+--- a/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmInsertImpl.java	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmInsertImpl.java	(date 1665993769546)
+@@ -1,6 +1,6 @@
+ package robust.gradle.plugin.asm;
+ 
+-import com.android.utils.AsmUtils;
++
+ import com.meituan.robust.ChangeQuickRedirect;
+ import com.meituan.robust.Constants;
+ 
+Index: patch/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/patch/build.gradle b/patch/build.gradle
+--- a/patch/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/patch/build.gradle	(date 1665997100241)
+@@ -1,11 +1,11 @@
+ apply plugin: 'com.android.library'
+ project.archivesBaseName = 'robust'
+ android {
+-    compileSdkVersion 24
+-    buildToolsVersion '25.0.2'
++    compileSdkVersion 30
++    buildToolsVersion '30.0.3'
+     defaultConfig {
+-        minSdkVersion 9
+-        targetSdkVersion 24
++        minSdkVersion 21
++        targetSdkVersion 30
+         versionCode 1
+         versionName '1.0'
+     }
+@@ -30,8 +30,8 @@
+     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+ }
+ dependencies {
+-//    compile 'com.meituan.robust:autopatchbase:' + VERSION_NAME
+-    compile project(':autopatchbase')
++    implementation "com.meituan.robust:autopatchbase:$AUTO_PATCH_VERSION"
++    //compile project(':autopatchbase')
+ }
+ 
+-apply from: '../gradle_mvn_push.gradle'
++apply from: '../maven-push.gradle'
+Index: gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmUtils.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmUtils.java b/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmUtils.java
+new file mode 100644
+--- /dev/null	(date 1665993769539)
++++ b/gradle-plugin/src/main/groovy/robust/gradle/plugin/asm/AsmUtils.java	(date 1665993769539)
+@@ -0,0 +1,28 @@
++package robust.gradle.plugin.asm;
++
++import com.google.common.base.Preconditions;
++
++public class AsmUtils {
++    private AsmUtils() {}
++
++    public static final String CONSTRUCTOR = "<init>";
++    public static final String CLASS_INITIALIZER = "<clinit>";
++
++    /**
++     * Converts a class name from the Java language naming convention (foo.bar.baz) to the JVM
++     * internal naming convention (foo/bar/baz).
++     */
++
++    public static String toInternalName( String className) {
++        return className.replace('.', '/');
++    }
++
++    /**
++     * Gets the class name from a class member internal name, like {@code com/foo/Bar.baz:(I)V}.
++     */
++
++    public static String getClassName( String memberName) {
++        Preconditions.checkArgument(memberName.contains("."), "Class name passed as argument.");
++        return memberName.substring(0, memberName.indexOf('.'));
++    }
++}
+Index: autopatchbase/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/autopatchbase/build.gradle b/autopatchbase/build.gradle
+--- a/autopatchbase/build.gradle	(revision 955adcc21e4fbcb52054a8f7f4bbb11f462aeb2f)
++++ b/autopatchbase/build.gradle	(date 1665996823866)
+@@ -1,4 +1,4 @@
+ apply plugin: 'java'
+-apply from: '../gradle_mvn_push.gradle'
+-sourceCompatibility= 1.7
+-targetCompatibility= 1.7
++apply from: '../maven-push.gradle'
++sourceCompatibility= 1.8
++targetCompatibility= 1.8
