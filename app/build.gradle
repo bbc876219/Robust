@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+//apply plugin: 'me.tatarka.retrolambda'
 //apply plugin: 'auto-patch-plugin'
 apply plugin: 'robust'
 
@@ -39,6 +39,7 @@ android {
             minifyEnabled true
 //            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.meituan
         }
     }
 
@@ -62,14 +63,16 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 dependencies {
-    implementation 'com.google.code.gson:gson:2.7'
+
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    implementation 'com.android.support:appcompat-v7:25.3.1'
+//    implementation project(':autopatchbase')
+    implementation "com.meituan.robust:autopatchbase:$AUTO_PATCH_VERSION"
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.squareup.okhttp:okhttp:2.5.0'
     implementation 'com.google.code.gson:gson:2.3.1'
+    //noinspection GradleCompatible
     implementation 'com.android.support:design:25.4.0'
     implementation 'org.javassist:javassist:3.20.0-GA'
-    compile project(path: ':patch')
+    implementation project(path: ':patch')
 }
