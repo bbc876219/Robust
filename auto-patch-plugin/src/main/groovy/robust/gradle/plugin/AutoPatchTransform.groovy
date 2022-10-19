@@ -84,7 +84,7 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
     @Override
     void transform(Context context, Collection<TransformInput> inputs, Collection<TransformInput> referencedInputs, TransformOutputProvider outputProvider, boolean isIncremental) throws IOException, TransformException, InterruptedException {
         def startTime = System.currentTimeMillis()
-        logger.quiet '================autoPatch start================'
+        println '================autoPatch start================'
         copyJarToRobust()
         outputProvider.deleteAll()
         def outDir = outputProvider.getContentLocation("main", outputTypes, scopes, Format.DIRECTORY)
@@ -93,13 +93,13 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
         }
         def box = ReflectUtils.toCtClasses(inputs, Config.classPool)
         def cost = (System.currentTimeMillis() - startTime) / 1000
-        logger.quiet "check all class cost $cost second, class count: ${box.size()}"
+        println "check all class cost $cost second, class count: ${box.size()}"
         autoPatch(box)
 //        JavaUtils.removeJarFromLibs()
-        logger.quiet '================method singure to methodid is printed below================'
+        println '================method singure to methodid is printed below================'
         JavaUtils.printMap(Config.methodMap)
         cost = (System.currentTimeMillis() - startTime) / 1000
-        logger.quiet "autoPatch cost $cost second"
+        println "autoPatch cost $cost second"
         throw new RuntimeException("auto patch end successfully")
     }
 
