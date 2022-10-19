@@ -47,11 +47,17 @@ public class AsmInsertImpl extends InsertcodeStrategy {
 
     @Override
     protected void insertCode(List<CtClass> box, File jarFile) throws IOException, CannotCompileException {
+        System.out.println( "AsmInsertImpl.insertCode() called with: box = [" + box.size() + "], jarFile = [" + jarFile + "]");
         ZipOutputStream outStream = new JarOutputStream(new FileOutputStream(jarFile));
         //get every class in the box ,ready to insert code
         for (CtClass ctClass : box) {
+            System.out.println( "AsmInsertImpl.insertCode() called with: ctClass.getName() = [" + ctClass.getName() + "]");
             //change modifier to public ,so all the class in the apk will be public ,you will be able to access it in the patch
-            ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
+            try {
+                ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
+            } catch (Exception e) {
+                System.out.println("setModifiers Exception:ctClass="+ctClass.getName()+"   ,Exception="+e.getMessage());
+            }
             if (isNeedInsertClass(ctClass.getName()) && !(ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1)) {
                 //only insert code into specific classes
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName().replaceAll("\\.", "/")), outStream, ctClass.getName().replaceAll("\\.", "/") + ".class");

@@ -13,26 +13,33 @@ import java.util.regex.Matcher
  */
 class ConvertUtils {
     static List<CtClass> toCtClasses(Collection<TransformInput> inputs, ClassPool classPool) {
-        List<String> classNames = new ArrayList<>()
-        List<CtClass> allClass = new ArrayList<>();
+        List<String> classNames = new ArrayList<>(1024*20)
+        List<CtClass> allClass = new ArrayList<>(1024*20);
         def startTime = System.currentTimeMillis()
         inputs.each {
             it.directoryInputs.each {
                 def dirPath = it.file.absolutePath
+                println "ConvertUtils.toCtClasses.directoryInputs.insertClassPath = ${it.file.absolutePath}"
                 classPool.insertClassPath(it.file.absolutePath)
+                println "classPool.insertClassPath: ${it.file.absolutePath} "
                 org.apache.commons.io.FileUtils.listFiles(it.file, null, true).each {
                     if (it.absolutePath.endsWith(SdkConstants.DOT_CLASS)) {
                         def className = it.absolutePath.substring(dirPath.length() + 1, it.absolutePath.length() - SdkConstants.DOT_CLASS.length()).replaceAll(Matcher.quoteReplacement(File.separator), '.')
-                        if(classNames.contains(className)){
-                            throw new RuntimeException("You have duplicate classes with the same name : "+className+" please remove duplicate classes ")
+                        if (classNames.contains(className)) {
+                            Syste.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes")
+                        } else {
+                            println "ConvertUtils.directoryInputs.toCtClasses.insertClassNames = ${className}"
+                            classNames.add(className)
                         }
-                        classNames.add(className)
+
                     }
                 }
             }
 
             it.jarInputs.each {
                 classPool.insertClassPath(it.file.absolutePath)
+                println "classPool.insertClassPath: ${it.file.absolutePath} "
+                println "ConvertUtils.toCtClasses.jarInputs.insertClassPath = ${it.file.absolutePath}"
                 def jarFile = new JarFile(it.file)
                 Enumeration<JarEntry> classes = jarFile.entries();
                 while (classes.hasMoreElements()) {
@@ -40,16 +47,19 @@ class ConvertUtils {
                     String className = libClass.getName();
                     if (className.endsWith(SdkConstants.DOT_CLASS)) {
                         className = className.substring(0, className.length() - SdkConstants.DOT_CLASS.length()).replaceAll('/', '.')
-                        if(classNames.contains(className)){
-                            throw new RuntimeException("You have duplicate classes with the same name : "+className+" please remove duplicate classes ")
+                        if (classNames.contains(className)) {
+                            Syste.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes ")
+                        } else {
+                            println "ConvertUtils.jarInputs.toCtClasses.insertClassNames = ${className}"
+                            classNames.add(className)
                         }
-                        classNames.add(className)
+
                     }
                 }
             }
         }
         def cost = (System.currentTimeMillis() - startTime) / 1000
-        println "read all class file cost $cost second"
+        println "read all class file cost $cost second classNames.size=${classNames.size()}"
         classNames.each {
             try {
                 allClass.add(classPool.get(it));

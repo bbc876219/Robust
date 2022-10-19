@@ -4,14 +4,15 @@ compileGroovy {
     targetCompatibility = 1.8
 }
 dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
+
     implementation 'com.android.tools.build:gradle:4.2.1'
     implementation 'org.javassist:javassist:3.20.0-GA'
     implementation fileTree(dir: "./src/main/libs", include: ['*.jar'])
 //    implementation project(':autopatchbase')
     implementation "com.meituan.robust:autopatchbase:$AUTO_PATCH_VERSION"
     implementation 'org.ow2.asm:asm:5.0.1'
+    implementation gradleApi()
+    implementation localGroovy()
 }
 
 apply from: '../maven-push.gradle'

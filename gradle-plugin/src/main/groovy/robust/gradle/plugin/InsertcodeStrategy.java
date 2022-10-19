@@ -67,18 +67,22 @@ public abstract class InsertcodeStrategy {
         //这样子可以在需要埋点的剔除指定的类
         for (String exceptName : exceptPackageList) {
             if (className.startsWith(exceptName)) {
+                System.out.println( "isNeedInsertClass() called with: className = [" + className + "] return false  in exceptPackageList");
                 return false;
             }
         }
         for (String name : hotfixPackageList) {
             if (className.startsWith(name)) {
+                System.out.println( "isNeedInsertClass() called with: className = [" + className + "] return true");
                 return true;
             }
         }
+        System.out.println( "isNeedInsertClass() called with: className = [" + className + "] return false");
         return false;
     }
 
     protected void zipFile(byte[] classBytesArray, ZipOutputStream zos, String entryName) {
+        System.out.println( "zipFile() called with:, entryName = [" + entryName + "]");
         try {
             ZipEntry entry = new ZipEntry(entryName);
             zos.putNextEntry(entry);
@@ -86,7 +90,7 @@ public abstract class InsertcodeStrategy {
             zos.closeEntry();
             zos.flush();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println( "zipFile() called with:, Exception = [" + e.getMessage() + "]");
         }
     }
 }

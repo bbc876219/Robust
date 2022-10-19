@@ -20,7 +20,7 @@ import java.util.zip.GZIPOutputStream
 
 class RobustTransform extends Transform implements Plugin<Project> {
     Project project
-    static Logger logger
+    public static Logger logger
     private static List<String> hotfixPackageList = new ArrayList<>();
     private static List<String> hotfixMethodList = new ArrayList<>();
     private static List<String> exceptPackageList = new ArrayList<>();
@@ -60,7 +60,7 @@ class RobustTransform extends Transform implements Plugin<Project> {
             if (!isDebugTask) {
                 project.android.registerTransform(this)
                 project.afterEvaluate(new RobustApkHashAction())
-                logger.quiet "Register robust transform successful !!!"
+                println "Register robust transform successful !!!"
             }
             if (null != robust.switch.turnOnRobust && !"true".equals(String.valueOf(robust.switch.turnOnRobust))) {
                 return;
@@ -116,6 +116,15 @@ class RobustTransform extends Transform implements Plugin<Project> {
             isForceInsertLambda = true;
         else
             isForceInsertLambda = false;
+        println("hotfixPackageList=" + hotfixPackageList)
+        println("hotfixMethodList=" + hotfixMethodList)
+        println("exceptPackageList=" + exceptPackageList)
+        println("exceptMethodList=" + exceptMethodList)
+        println("isHotfixMethodLevel=" + isHotfixMethodLevel)
+        println("isExceptMethodLevel=" + isExceptMethodLevel)
+        println("isForceInsert=" + isForceInsert)
+        println("isForceInsertLambda=" + isForceInsertLambda)
+        println("useASM=" + useASM)
     }
 
     @Override
@@ -141,7 +150,7 @@ class RobustTransform extends Transform implements Plugin<Project> {
 
     @Override
     void transform(Context context, Collection<TransformInput> inputs, Collection<TransformInput> referencedInputs, TransformOutputProvider outputProvider, boolean isIncremental) throws IOException, TransformException, InterruptedException {
-        logger.quiet '================robust start================'
+        println '================robust start================'
         def startTime = System.currentTimeMillis()
         outputProvider.deleteAll()
         File jarFile = outputProvider.getContentLocation("main", getOutputTypes(), getScopes(),
@@ -155,12 +164,13 @@ class RobustTransform extends Transform implements Plugin<Project> {
 
         ClassPool classPool = new ClassPool()
         project.android.bootClasspath.each {
+            println "classPool.appendClassPath: ${it.absolutePath} useASM=$useASM"
             classPool.appendClassPath((String) it.absolutePath)
         }
 
         def box = ConvertUtils.toCtClasses(inputs, classPool)
         def cost = (System.currentTimeMillis() - startTime) / 1000
-//        logger.quiet "check all class cost $cost second, class count: ${box.size()}"
+        println "check all class cost $cost second, class count: ${box.size()} useASM=$useASM"
         if (useASM) {
             insertcodeStrategy = new AsmInsertImpl(hotfixPackageList, hotfixMethodList, exceptPackageList, exceptMethodList, isHotfixMethodLevel, isExceptMethodLevel, isForceInsertLambda);
         } else {
@@ -169,22 +179,22 @@ class RobustTransform extends Transform implements Plugin<Project> {
         insertcodeStrategy.insertCode(box, jarFile);
         writeMap2File(insertcodeStrategy.methodMap, Constants.METHOD_MAP_OUT_PATH)
 
-        logger.quiet "===robust print id start==="
+        println "===robust print id start==="
         for (String method : insertcodeStrategy.methodMap.keySet()) {
             int id = insertcodeStrategy.methodMap.get(method);
-            System.out.println("key is   " + method + "  value is    " + id);
+            println("key is   " + method + "  value is    " + id);
         }
-        logger.quiet "===robust print id end==="
+        println "===robust print id end==="
 
         cost = (System.currentTimeMillis() - startTime) / 1000
-        logger.quiet "robust cost $cost second"
-        logger.quiet '================robust   end================'
+        println "robust cost $cost second"
+        println '================robust   end================'
     }
 
     private void writeMap2File(Map map, String path) {
         File file = new File(project.buildDir.path + path);
         if (!file.exists() && (!file.parentFile.mkdirs() || !file.createNewFile())) {
-//            logger.error(path + " file create error!!")
+            println(path + " file create error!!")
         }
         FileOutputStream fileOut = new FileOutputStream(file);
 
