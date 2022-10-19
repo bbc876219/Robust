@@ -74,5 +74,6 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:design:25.4.0'
     implementation 'org.javassist:javassist:3.20.0-GA'
-    implementation project(path: ':patch')
+    //implementation project(path: ':patch')
+    implementation "com.meituan.robust:patch:$PATCH_LOAD_VERSION"
 }
