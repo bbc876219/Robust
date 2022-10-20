@@ -26,7 +26,7 @@ class ConvertUtils {
                     if (it.absolutePath.endsWith(SdkConstants.DOT_CLASS)) {
                         def className = it.absolutePath.substring(dirPath.length() + 1, it.absolutePath.length() - SdkConstants.DOT_CLASS.length()).replaceAll(Matcher.quoteReplacement(File.separator), '.')
                         if (classNames.contains(className)) {
-                            Syste.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes")
+                            System.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes")
                         } else {
                             println "ConvertUtils.directoryInputs.toCtClasses.insertClassNames = ${className}"
                             classNames.add(className)
@@ -48,7 +48,7 @@ class ConvertUtils {
                     if (className.endsWith(SdkConstants.DOT_CLASS)) {
                         className = className.substring(0, className.length() - SdkConstants.DOT_CLASS.length()).replaceAll('/', '.')
                         if (classNames.contains(className)) {
-                            Syste.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes ")
+                            System.out.println("You have duplicate classes with the same name : " + className + " please remove duplicate classes ")
                         } else {
                             println "ConvertUtils.jarInputs.toCtClasses.insertClassNames = ${className}"
                             classNames.add(className)
