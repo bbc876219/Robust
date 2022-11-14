@@ -38,16 +38,16 @@ class RobustApkHashAction implements Action<Project> {
 
                 //gradle tools 3.5.0+ , add Constants.ROBUST_APK_HASH_FILE_NAM file to resources.ap_
 //                        createHashFile(assetsDir.getAbsolutePath(), Constants.ROBUST_APK_HASH_FILE_NAME, robustHash)
-                for (File file : packageTask.getInputs().getFiles().getAsFileTree()) {
-                    if (file.getAbsolutePath().endsWith(".ap_")) {
-                        try {
-                            createHashFile2(file.getAbsolutePath(), "assets/" + Constants.ROBUST_APK_HASH_FILE_NAME, robustHash);
-                            System.out.println(">>>write hash:" + robustHash);
-                        } catch (IOException e) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
+//                for (File file : packageTask.getInputs().getFiles().getAsFileTree()) {
+//                    if (file.getAbsolutePath().endsWith(".ap_")) {
+//                        try {
+//                            createHashFile2(file.getAbsolutePath(), "assets/" + Constants.ROBUST_APK_HASH_FILE_NAME, robustHash);
+//                            System.out.println(">>>write hash:" + robustHash);
+//                        } catch (IOException e) {
+//                            e.printStackTrace()
+//                        }
+//                    }
+//                }
 
                 //额外保存一份Constants.ROBUST_APK_HASH_FILE_NAME文件到build/output/robust，便于CI存储
                 String buildRobustDir = "${project.buildDir}" + File.separator + "$Constants.ROBUST_GENERATE_DIRECTORY" + File.separator
