@@ -1,5 +1,7 @@
 package com.meituan.robust;
 
+import android.util.Log;
+
 import java.io.File;
 
 /**
@@ -13,6 +15,7 @@ public class Patch implements Cloneable {
     }
 
     public void setName(String name) {
+        Log.d("robust", "Patch.setName() called with: name = [" + name + "]");
         this.name=name;
     }
 
@@ -21,6 +24,7 @@ public class Patch implements Cloneable {
     }
 
     public void setUrl(String url) {
+        Log.d("robust", "Patch.setUrl() called with: url = [" + url + "]");
         this.url = url;
     }
     //原始补丁文件的路径，推荐放到私有目录
@@ -29,6 +33,7 @@ public class Patch implements Cloneable {
     }
 
     public void setLocalPath(String localPath) {
+        Log.d("robust", "Patch.setLocalPath() called with: localPath = [" + localPath + "]");
         this.localPath = localPath;
     }
     //原始补丁的md5，确保原始补丁文件没有被篡改

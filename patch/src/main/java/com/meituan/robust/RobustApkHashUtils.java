@@ -2,6 +2,7 @@ package com.meituan.robust;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class RobustApkHashUtils {
     }
 
     private static String readRobustApkHashFile(Context context) {
+        Log.d("robust", "Patch.readRobustApkHashFile() called with: context = [" + context + "]");
         String value = "";
         if (null == context) {
             return value;
@@ -38,13 +40,16 @@ public class RobustApkHashUtils {
     }
 
     private static String readFirstLine(Context context, String fileName) {
+
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(
                     new InputStreamReader(context.getAssets().open(fileName)));
-
+            String line = reader.readLine();
+            Log.d("robust", "Patch.readFirstLine() called with: line = [" + line + "], fileName = [" + fileName + "]");
             return reader.readLine();
         } catch (IOException e) {
+            Log.e("robust", "Patch.readFirstLine() called with: context = [" + context + "], fileName = [" + fileName + "],IOException=",e);
             return "";
         } finally {
             if (reader != null) {

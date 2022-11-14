@@ -83,6 +83,7 @@ public class PatchExecutor extends Thread {
     }
 
     protected boolean patch(Context context, Patch patch) {
+        Log.d("robust", "patch() called with: context = [" + context + "], patch = [" + patch + "]");
         if (!patchManipulate.verifyPatch(context, patch)) {
             robustCallBack.logNotify("verifyPatch failure, patch info:" + "id = " + patch.getName() + ",md5 = " + patch.getMd5(), "class:PatchExecutor method:patch line:107");
             return false;
