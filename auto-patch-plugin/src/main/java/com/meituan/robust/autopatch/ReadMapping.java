@@ -59,7 +59,7 @@ public class ReadMapping {
                     line = line.trim();
                 }
                 needBacktrace = false;
-                if (line.indexOf("->") > 0 && line.indexOf(":") == line.length() - 1) {
+                if (!line.startsWith("#")&&line.indexOf("->") > 0 && line.indexOf(":") == line.length() - 1) {
                     ClassMapping classMapping = new ClassMapping();
                     classMapping.setClassName(line.substring(0, line.indexOf("->") - 1).trim());
                     classMapping.setValueName(line.split("->")[1].substring(0, line.split("->")[1].length() - 1).trim());
@@ -72,7 +72,8 @@ public class ReadMapping {
                         }
                         String[] lineinfo = line.split(" ");
                         if (lineinfo.length != 4) {
-                            throw new RuntimeException("mapping line info is error  " + line);
+                            System.out.println("mapping line info is error  " + line);
+                           break;
                         }
                         if (lineinfo[1].contains("(") && lineinfo[1].contains(")")) {
                             //methods need return type

@@ -54,7 +54,7 @@ class ReadAnnotation {
     }
 
     public static boolean scanClassForAddClassAnnotation(CtClass ctclass) {
-
+        if (ctclass.name.contains("META-INF")) return false;
         Add addClassAnootation = ctclass.getAnnotation(Constants.AddAnnotationClass) as Add;
         if (addClassAnootation != null && !Config.newlyAddedClassNameList.contains(ctclass.name)) {
             Config.newlyAddedClassNameList.add(ctclass.name);
@@ -77,6 +77,7 @@ class ReadAnnotation {
     public static Set scanClassForModifyMethod(CtClass ctclass) {
         Set patchMethodSignureSet = new HashSet<String>();
         boolean isAllMethodsPatch = true;
+        if (ctclass.name.contains("META-INF")) return patchMethodSignureSet;
         ctclass.declaredMethods.findAll {
             return it.hasAnnotation(Constants.ModifyAnnotationClass);
         }.each {

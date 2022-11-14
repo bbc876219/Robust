@@ -27,6 +27,8 @@ class InlineClassFactory {
     }
 
     def dealInLineClass(String patchPath) {
+        println "InlineClassFactory.dealInLineClass  patchPath = $patchPath"
+        println "patchPath = $patchPath"
         //pay attention to order
         Set usedClass = new HashSet();
         usedClass.addAll(Config.newlyAddedClassNameList);

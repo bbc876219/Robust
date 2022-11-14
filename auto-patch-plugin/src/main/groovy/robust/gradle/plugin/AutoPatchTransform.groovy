@@ -130,21 +130,31 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
         File buildDir = project.getBuildDir();
         String patchPath = buildDir.getAbsolutePath() + File.separator + Constants.ROBUST_GENERATE_DIRECTORY + File.separator;
         clearPatchPath(patchPath);
+        println "AutoPatchTransform.autoPatch0"
+        println "buildDir = ${buildDir.path}  patchPath = ${patchPath}"
         ReadAnnotation.readAnnotation(box, logger);
+        println "AutoPatchTransform.autoPatch1"
         if(Config.supportProGuard) {
             ReadMapping.getInstance().initMappingInfo();
         }
-
+        println "AutoPatchTransform.autoPatch2"
         generatPatch(box,patchPath);
-
+        println "AutoPatchTransform.autoPatch3"
         zipPatchClassesFile()
+        println "AutoPatchTransform.autoPatch4"
         executeCommand(jar2DexCommand)
+        println "AutoPatchTransform.autoPatch5"
         executeCommand(dex2SmaliCommand)
+        println "AutoPatchTransform.autoPatch6"
         SmaliTool.getInstance().dealObscureInSmali();
+        println "AutoPatchTransform.autoPatch7"
         executeCommand(smali2DexCommand)
+        println "AutoPatchTransform.autoPatch8"
         //package patch.dex to patch.jar
         packagePatchDex2Jar()
+        println "AutoPatchTransform.autoPatch9"
         deleteTmpFiles()
+        println "AutoPatchTransform.autoPatch10"
     }
     def  zipPatchClassesFile(){
         ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(Config.robustGenerateDirectory+ Constants.ZIP_FILE_NAME));
@@ -177,11 +187,14 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
     }
 
     def  generatPatch(List<CtClass> box,String patchPath){
+        println "AutoPatchTransform.generatPatch"
+        println "Config.isManual = ${Config.isManual}, patchPath = $patchPath , Config.patchMethodSignatureSet = ${Config.patchMethodSignatureSet}"
         if (!Config.isManual) {
             if (Config.patchMethodSignatureSet.size() < 1) {
                 throw new RuntimeException(" patch method is empty ,please check your Modify annotation or use RobustModify.modify() to mark modified methods")
             }
             Config.methodNeedPatchSet.addAll(Config.patchMethodSignatureSet)
+            println "Config.methodNeedPatchSet = ${Config.methodNeedPatchSet},  Config.newlyAddedClassNameList = ${Config.newlyAddedClassNameList}"
             InlineClassFactory.dealInLineClass(patchPath, Config.newlyAddedClassNameList)
             initSuperMethodInClass(Config.modifiedClassNameList);
             //auto generate all class
@@ -191,8 +204,10 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
                 patchClass.writeFile(patchPath)
                 patchClass.defrost();
                 createControlClass(patchPath, ctClass)
+                println "patchClass = ${patchClass.name}"
             }
             createPatchesInfoClass(patchPath);
+            println "patchPath = ${patchPath},Config.methodNeedPatchSet = ${Config.methodNeedPatchSet}"
             if (Config.methodNeedPatchSet.size() > 0) {
                 throw new RuntimeException(" some methods haven't patched,see unpatched method list : " + Config.methodNeedPatchSet.toListString())
             }
@@ -222,6 +237,8 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
     }
 
     def autoPatchManually(List<CtClass> box, String patchPath) {
+        println "AutoPatchTransform.autoPatchManually"
+        println "Config.isManual = ${Config.isManual}, Config.patchPackageName = ${Config.patchPackageName}   ctClass.name.startsWith(Config.patchPackageName)=${ctClass.name.startsWith(Config.patchPackageName)}"
         box.forEach { ctClass ->
             if (Config.isManual && ctClass.name.startsWith(Config.patchPackageName)) {
                 Config.modifiedClassNameList.add(ctClass.name);
@@ -235,7 +252,9 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
         Process output = commond.execute(null, new File(Config.robustGenerateDirectory))
         output.inputStream.eachLine { println commond + " inputStream output   " + it }
         output.errorStream.eachLine {
-            println commond + " errorStream output   " + it;
+            println commond ;
+            println " errorStream output   " ;
+            println  it;
             throw new RuntimeException("execute command " + commond + " error");
         }
     }
