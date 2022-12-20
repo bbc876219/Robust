@@ -153,7 +153,9 @@ class AutoPatchTransform extends Transform implements Plugin<Project> {
         //package patch.dex to patch.jar
         packagePatchDex2Jar()
         println "AutoPatchTransform.autoPatch9"
-        deleteTmpFiles()
+        if (!Constants.isLogging) {
+            deleteTmpFiles()
+        }
         println "AutoPatchTransform.autoPatch10"
     }
     def  zipPatchClassesFile(){

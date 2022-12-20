@@ -127,4 +127,18 @@ public class Patch implements Cloneable {
         }
         return clone;
     }
+
+    @Override
+    public String toString() {
+        return "Patch{" +
+                "patchesInfoImplClassFullName='" + patchesInfoImplClassFullName + '\'' +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", localPath='" + localPath + '\'' +
+                ", tempPath='" + tempPath + '\'' +
+                ", md5='" + md5 + '\'' +
+                ", appHash='" + appHash + '\'' +
+                ", isAppliedSuccess=" + isAppliedSuccess +
+                '}';
+    }
 }
